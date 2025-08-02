@@ -10,34 +10,43 @@ from .routes.upload_router import router as upload_router
 
 # Create FastAPI app
 app = FastAPI(
-    title="ClauseMind - Intelligent Clause Retriever & Decision System",
+    title="ClauseMind Cloud - Intelligent Clause Retriever & Decision System",
     description="""
-    🧠 **ClauseMind** - An intelligent system that uses LLM-powered semantic search to retrieve relevant clauses from insurance documents and provide automated decision-making.
+    🧠 **ClauseMind Cloud** - An intelligent system that uses LLM-powered semantic search to retrieve relevant clauses from insurance documents and provide automated decision-making with cloud storage.
 
     ## Features:
-    - **Document Upload**: Upload PDF insurance documents with drag & drop
-    - **Auto Indexing**: Automatic embedding generation and FAISS indexing
-    - **Semantic Search**: Find relevant clauses using FAISS vector search
+    - **Cloud Document Upload**: Upload PDF insurance documents to Cloudinary
+    - **Auto Indexing**: Automatic embedding generation and Pinecone indexing
+    - **Semantic Search**: Find relevant clauses using Pinecone vector search
     - **LLM Reasoning**: Use Gemini to analyze clauses and make decisions
     - **Entity Extraction**: Automatically extract key information from queries
     - **Real-time Processing**: Background processing for large documents
+    - **Cloud Deployment**: Fully deployable on Render, Vercel, or any cloud platform
 
     ## Pipeline:
-    1. PDF Upload → Text Extraction & Chunking
-    2. User Query → Entity Extraction (Gemini)
-    3. Query Embedding → FAISS Vector Search
-    4. Retrieved Clauses → LLM Reasoning (Gemini)
-    5. Structured Output → Decision + Justification
+    1. PDF Upload → Cloudinary Storage
+    2. Text Extraction & Chunking → Local Processing
+    3. User Query → Entity Extraction (Gemini)
+    4. Query Embedding → Pinecone Vector Search
+    5. Retrieved Clauses → LLM Reasoning (Gemini)
+    6. Structured Output → Decision + Justification
 
     ## Tech Stack:
     - **Backend**: FastAPI (Async)
-    - **Embeddings**: SentenceTransformers (MiniLM)
-    - **Vector DB**: FAISS (Local)
+    - **File Storage**: Cloudinary
+    - **Vector DB**: Pinecone
+    - **Embeddings**: SentenceTransformers (Local) or Hugging Face API (Remote)
     - **LLM**: Google Gemini (via LangChain)
     - **Document Processing**: PyPDF2
-    - **File Handling**: Async file operations
+    - **Cloud Deployment**: Render/Vercel ready
+
+    ## Environment Variables:
+    - `CLOUDINARY_*`: Cloudinary configuration
+    - `PINECONE_*`: Pinecone vector database
+    - `HUGGINGFACE_API_KEY`: Optional remote embeddings
+    - `GEMINI_API_KEY`: Google Gemini API
     """,
-    version="1.0.0",
+    version="2.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
 )
@@ -70,22 +79,29 @@ async def root(request: Request):
 @app.get("/api/v1", response_class=JSONResponse)
 async def api_info():
     return {
-        "api_name": "ClauseMind API",
-        "version": "1.0.0",
+        "api_name": "ClauseMind Cloud API",
+        "version": "2.0.0",
+        "architecture": "cloud-native",
         "endpoints": {
             "health": "GET /api/v1/health",
             "upload": "POST /api/v1/upload_pdf",
             "upload_async": "POST /api/v1/upload_pdf_async",
             "query": "POST /api/v1/query",
             "documents": "GET /api/v1/documents",
-            "uploaded_files": "GET /api/v1/uploaded_files"
+            "vector_stats": "GET /api/v1/vector_stats"
         },
         "features": [
-            "PDF document upload and processing",
-            "Semantic clause retrieval using FAISS",
+            "Cloud PDF document upload and processing",
+            "Semantic clause retrieval using Pinecone",
             "LLM-powered decision making with Gemini",
-            "Entity extraction from natural language queries"
-        ]
+            "Entity extraction from natural language queries",
+            "Cloud-native deployment ready"
+        ],
+        "storage": {
+            "files": "Cloudinary",
+            "vectors": "Pinecone",
+            "embeddings": "Local SentenceTransformers or Remote Hugging Face API"
+        }
     }
 
 # For local dev

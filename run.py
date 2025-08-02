@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-ClauseMind - Startup Script
-Run this script to start the ClauseMind application
+ClauseMind Cloud - Startup Script
+Run this script to start the ClauseMind Cloud application
 """
 
 import os
@@ -18,7 +18,8 @@ def check_dependencies():
         import uvicorn
         import langchain
         import sentence_transformers
-        import faiss
+        import pinecone
+        import cloudinary
         import PyPDF2
         import google.generativeai
         print("✅ All dependencies are installed")
@@ -35,27 +36,59 @@ def check_env_file():
         print("⚠️  .env file not found")
         print("Creating .env file with default values...")
         
-        env_content = """# ClauseMind Configuration
+        env_content = """# ClauseMind Cloud Configuration
 GEMINI_API_KEY=your_gemini_api_key_here
-MODEL_NAME=gemini-pro
+MODEL_NAME=models/gemini-1.5-flash
 EMBEDDING_MODEL=all-MiniLM-L6-v2
 CHUNK_SIZE=1000
 CHUNK_OVERLAP=200
 TOP_K_RETRIEVAL=5
+
+# Cloud storage settings
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+
+# Pinecone settings
+PINECONE_API_KEY=your_pinecone_api_key
+PINECONE_ENVIRONMENT=your_pinecone_environment
+PINECONE_INDEX_NAME=assurio-documents
+
+# Hugging Face settings (optional)
+HUGGINGFACE_API_KEY=your_huggingface_api_key
+USE_REMOTE_EMBEDDINGS=false
+
+# Storage mode
+STORAGE_MODE=cloud
 """
         
         with open(env_file, 'w') as f:
             f.write(env_content)
         
         print("✅ Created .env file")
-        print("⚠️  Please update GEMINI_API_KEY in .env file with your actual API key")
+        print("⚠️  Please update all API keys in .env file with your actual credentials")
         return False
     
-    # Check if API key is set
+    # Check if API keys are set
     with open(env_file, 'r') as f:
         content = f.read()
-        if 'your_gemini_api_key_here' in content:
-            print("⚠️  Please update GEMINI_API_KEY in .env file with your actual API key")
+        missing_keys = []
+        
+        required_keys = [
+            'GEMINI_API_KEY',
+            'CLOUDINARY_CLOUD_NAME',
+            'CLOUDINARY_API_KEY', 
+            'CLOUDINARY_API_SECRET',
+            'PINECONE_API_KEY',
+            'PINECONE_ENVIRONMENT'
+        ]
+        
+        for key in required_keys:
+            if f'{key}=your_' in content or f'{key}=' in content:
+                missing_keys.append(key)
+        
+        if missing_keys:
+            print(f"⚠️  Please update these API keys in .env file: {', '.join(missing_keys)}")
             return False
     
     print("✅ Environment configuration looks good")
@@ -63,14 +96,14 @@ TOP_K_RETRIEVAL=5
 
 def create_directories():
     """Create necessary directories"""
-    directories = ['data', 'frontend']
+    directories = ['data', 'frontend', 'templates']
     for directory in directories:
         Path(directory).mkdir(exist_ok=True)
     print("✅ Directories created")
 
 def start_server():
     """Start the FastAPI server"""
-    print("\n🚀 Starting ClauseMind server...")
+    print("\n🚀 Starting ClauseMind Cloud server...")
     print("=" * 50)
     
     try:
@@ -99,8 +132,8 @@ def open_browser():
 
 def main():
     """Main startup function"""
-    print("🧠 ClauseMind - Intelligent Clause Retriever & Decision System")
-    print("=" * 60)
+    print("🧠 ClauseMind Cloud - Intelligent Clause Retriever & Decision System")
+    print("=" * 70)
     
     # Check dependencies
     if not check_dependencies():
@@ -113,13 +146,18 @@ def main():
     create_directories()
     
     print("\n📋 Quick Start Guide:")
-    print("1. Get your Gemini API key from: https://makersuite.google.com/app/apikey")
-    print("2. Update the GEMINI_API_KEY in .env file")
+    print("1. Get your API keys from:")
+    print("   - Google Gemini: https://makersuite.google.com/app/apikey")
+    print("   - Cloudinary: https://cloudinary.com")
+    print("   - Pinecone: https://pinecone.io")
+    print("   - Hugging Face (optional): https://huggingface.co")
+    print("2. Update the API keys in .env file")
     print("3. Upload a PDF document via the web interface")
     print("4. Start querying the system!")
     
     if not env_ok:
-        print("\n⚠️  Please configure your API key before starting the server")
+        print("\n⚠️  Please configure your API keys before starting the server")
+        print("📖 See CLOUD_DEPLOYMENT_GUIDE.md for detailed setup instructions")
         return
     
     print("\n🎯 Starting application...")

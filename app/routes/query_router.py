@@ -5,7 +5,7 @@ import asyncio
 
 from ..utils.pdf_loader import PDFLoader
 from ..utils.embeddings import EmbeddingManager
-from ..utils.vectorstore import FAISSVectorStore
+from ..utils.pinecone_vectorstore import PineconeVectorStore
 from ..utils.llm_reasoner import LLMReasoner
 from config import settings
 
@@ -43,12 +43,7 @@ async def get_services():
         embedding_manager = EmbeddingManager(settings.EMBEDDING_MODEL)
     
     if vector_store is None:
-        vector_store = FAISSVectorStore(embedding_manager)
-        # Try to load existing index
-        try:
-            vector_store.load_index()
-        except:
-            pass  # No existing index, will be created when documents are added
+        vector_store = PineconeVectorStore(embedding_manager)
     
     if llm_reasoner is None:
         llm_reasoner = LLMReasoner()
@@ -87,9 +82,6 @@ async def upload_document(file: UploadFile = File(...)):
         
         # Add to vector store
         await vector_store.add_documents(documents)
-        
-        # Save index
-        vector_store.save_index()
         
         return {
             "message": "Document uploaded successfully",
@@ -161,5 +153,8 @@ async def get_document_info():
     
     return {
         "document_count": vector_store.get_document_count(),
-        "is_initialized": vector_store.is_initialized
+        "is_initialized": vector_store.is_initialized,
+        "vector_store_type": "Pinecone",
+        "embedding_model": settings.EMBEDDING_MODEL,
+        "use_remote_embeddings": settings.USE_REMOTE_EMBEDDINGS
     } 

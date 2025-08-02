@@ -10,4 +10,7 @@ google-generativeai
 pydantic
 python-multipart
 aiofiles
-jinja2 
+jinja2
+cloudinary
+pinecone-client
+requests 
