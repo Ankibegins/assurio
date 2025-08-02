@@ -153,7 +153,7 @@ async def get_document_info():
     
     return {
         "document_count": vector_store.get_document_count(),
-        "is_initialized": vector_store.is_initialized,
+        "is_initialized": vector_store.is_initialized(),
         "vector_store_type": "Pinecone",
         "embedding_model": settings.EMBEDDING_MODEL,
         "use_remote_embeddings": settings.USE_REMOTE_EMBEDDINGS

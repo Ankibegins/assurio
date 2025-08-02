@@ -57,7 +57,6 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 
 # Pinecone settings
 PINECONE_API_KEY=your_pinecone_api_key
-PINECONE_ENVIRONMENT=your_pinecone_environment
 PINECONE_INDEX_NAME=assurio-documents
 
 # Hugging Face settings (optional)
@@ -134,10 +133,11 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
    - Name: `assurio-documents`
    - Dimension: `384`
    - Metric: `cosine`
+   - Cloud: `aws`
+   - Region: `us-west-2`
 3. **Get Credentials**:
    - API Key (found in console)
-   - Environment (found in console)
-4. **Configure**: Add credentials to `.env` file
+4. **Configure**: Add API key to `.env` file
 
 ### Hugging Face Setup (Optional)
 
@@ -189,7 +189,7 @@ curl "http://localhost:8000/api/v1/documents"
 ### Common Issues
 
 1. **Pinecone Connection Error**
-   - Check API key and environment
+   - Check API key
    - Ensure index exists and is active
 
 2. **Cloudinary Upload Error**
@@ -211,7 +211,6 @@ curl "http://localhost:8000/api/v1/documents"
 - [ ] `CLOUDINARY_API_KEY` - Cloudinary API key
 - [ ] `CLOUDINARY_API_SECRET` - Cloudinary API secret
 - [ ] `PINECONE_API_KEY` - Pinecone API key
-- [ ] `PINECONE_ENVIRONMENT` - Pinecone environment
 - [ ] `PINECONE_INDEX_NAME` - Pinecone index name
 - [ ] `HUGGINGFACE_API_KEY` - Hugging Face API key (optional)
 - [ ] `USE_REMOTE_EMBEDDINGS` - Set to "true" for remote embeddings

@@ -1,4 +1,5 @@
-import pinecone
+import os
+from pinecone import Pinecone, ServerlessSpec
 import numpy as np
 import uuid
 from typing import List, Tuple, Optional, Dict, Any
@@ -12,30 +13,30 @@ class PineconeVectorStore:
         self.index_name = settings.PINECONE_INDEX_NAME
         self.dimension = embedding_manager.get_dimension()
         
-        # Initialize Pinecone
-        pinecone.init(
-            api_key=settings.PINECONE_API_KEY,
-            environment=settings.PINECONE_ENVIRONMENT
-        )
+        # Initialize Pinecone with new API
+        self.pc = Pinecone(api_key=settings.PINECONE_API_KEY)
         
         # Get or create index
         self.index = self._get_or_create_index()
-        self.is_initialized = True
+        self._is_initialized = True
     
     def _get_or_create_index(self):
         """Get existing index or create new one"""
         try:
             # Check if index exists
-            if self.index_name in pinecone.list_indexes():
-                return pinecone.Index(self.index_name)
-            else:
+            if self.index_name not in self.pc.list_indexes().names():
                 # Create new index
-                pinecone.create_index(
+                self.pc.create_index(
                     name=self.index_name,
                     dimension=self.dimension,
-                    metric="cosine"
+                    metric="cosine",
+                    spec=ServerlessSpec(
+                        cloud="aws",
+                        region="us-west-2"
+                    )
                 )
-                return pinecone.Index(self.index_name)
+            
+            return self.pc.Index(self.index_name)
         except Exception as e:
             raise Exception(f"Error initializing Pinecone index: {str(e)}")
     
@@ -163,4 +164,4 @@ class PineconeVectorStore:
     
     def is_initialized(self) -> bool:
         """Check if vector store is initialized"""
-        return self.is_initialized 
+        return self._is_initialized 

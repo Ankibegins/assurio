@@ -12,5 +12,5 @@ python-multipart
 aiofiles
 jinja2
 cloudinary
-pinecone-client
+pinecone-client>=3.0.0
 requests 

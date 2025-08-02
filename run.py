@@ -51,7 +51,6 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 
 # Pinecone settings
 PINECONE_API_KEY=your_pinecone_api_key
-PINECONE_ENVIRONMENT=your_pinecone_environment
 PINECONE_INDEX_NAME=assurio-documents
 
 # Hugging Face settings (optional)
@@ -79,8 +78,7 @@ STORAGE_MODE=cloud
             'CLOUDINARY_CLOUD_NAME',
             'CLOUDINARY_API_KEY', 
             'CLOUDINARY_API_SECRET',
-            'PINECONE_API_KEY',
-            'PINECONE_ENVIRONMENT'
+            'PINECONE_API_KEY'
         ]
         
         for key in required_keys:

@@ -110,27 +110,44 @@ class CloudStorageManager:
     
     def get_file_info(self, file_data: Dict[str, Any]) -> Dict[str, Any]:
         """Get information about a saved file"""
-        if file_data.get("storage_type") == "cloudinary":
-            return {
-                "filename": file_data.get("original_filename"),
-                "size": file_data.get("file_size"),
-                "url": file_data.get("cloudinary_url"),
-                "storage_type": "cloudinary",
-                "file_id": file_data.get("file_id")
-            }
-        else:
-            # Local file
-            path = Path(file_data.get("local_path", ""))
-            if path.exists():
+        try:
+            if file_data.get("storage_type") == "cloudinary":
                 return {
-                    "filename": path.name,
-                    "size": path.stat().st_size,
-                    "created": path.stat().st_ctime,
-                    "path": str(path),
-                    "storage_type": "local",
-                    "file_id": file_data.get("file_id")
+                    "filename": file_data.get("original_filename", "unknown"),
+                    "size": file_data.get("file_size", 0),
+                    "url": file_data.get("cloudinary_url", ""),
+                    "storage_type": "cloudinary",
+                    "file_id": file_data.get("file_id", "")
                 }
-        return None
+            else:
+                # Local file
+                path = Path(file_data.get("local_path", ""))
+                if path.exists():
+                    return {
+                        "filename": path.name,
+                        "size": path.stat().st_size,
+                        "created": path.stat().st_ctime,
+                        "path": str(path),
+                        "storage_type": "local",
+                        "file_id": file_data.get("file_id", "")
+                    }
+                else:
+                    return {
+                        "filename": file_data.get("original_filename", "unknown"),
+                        "size": file_data.get("file_size", 0),
+                        "path": str(path),
+                        "storage_type": "local",
+                        "file_id": file_data.get("file_id", ""),
+                        "error": "File not found on disk"
+                    }
+        except Exception as e:
+            return {
+                "filename": file_data.get("original_filename", "unknown"),
+                "size": file_data.get("file_size", 0),
+                "storage_type": "unknown",
+                "file_id": file_data.get("file_id", ""),
+                "error": str(e)
+            }
     
     async def delete_file(self, file_data: Dict[str, Any]) -> bool:
         """Delete file from storage"""
